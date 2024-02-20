@@ -1,11 +1,11 @@
 import express from "express";
+import homeController from '../controller/homeController'
 
 const router = express.Router();
 
 const initWebRoutes = (app) => {
-    router.get('/' ,(req, res) => {
-        return res.send("Hello Word hihihi");
-    })
+    router.get('/', homeController.handelHomeController)
+    router.get('/user', homeController.handelUserController)
     return app.use('/', router)
 }
 

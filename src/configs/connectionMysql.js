@@ -1,21 +1,23 @@
-import mysql2 from 'mysql2';
-
-module.exports = function () {
+import mysql2 from 'mysql2/promise';
+import bluebird from 'bluebird'
+module.exports = async function () {
     //Establish Connection to the DB
-    const connection = mysql2.createConnection({
-        host: 'localhost',
-        user: 'root',
-        database: 'jwt'
-    });
+    try {
+        // Establish Connection to the DB
+        const connection = await mysql2.createConnection({
+            host: 'localhost',
+            user: 'root',
+            database: 'jwt',
+            Promise: bluebird
+        });
 
-    //Instantiate the connection
-    connection.connect(function (err) {
-        if (err) {
-            console.log(`connectionRequest Failed ${err.stack}`)
-        } else {
-            console.log(`DB connectionRequest Successful ${connection.threadId}`)
-        }
-    });
+        // Instantiate the connection
+        await connection.connect();
 
-    return connection
+        console.log(`DB connectionRequest Successful ${connection.threadId}`);
+        return connection;
+    } catch (err) {
+        console.error(`DB connectionRequest Failed: ${err.stack}`);
+        throw err; // Rethrow the error to be caught by the caller
+    }
 }

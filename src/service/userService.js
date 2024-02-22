@@ -1,5 +1,6 @@
-import connectionMysql from '../configs/connectionMysql'
+import connectionMysql from '../config/connectionMysql'
 import bcrypt from 'bcryptjs';
+import db from '../models/index'
 const  salt = bcrypt.genSaltSync(10);
 
 
@@ -7,12 +8,14 @@ const hashUserPassWord = (password) => {
    return bcrypt.hashSync(password, salt);
 }
 
-const createNewUser = async (email, name, password) => {
+const createNewUser = async (email, username, password) => {
     try {
         let hashPassWord = hashUserPassWord(password);
-        const connection = await connectionMysql();
-        const [row, fields]  = await connection.execute('INSERT INTO `users`(email, name, password) VALUES (?,?,?)', [email, name, hashPassWord])
-        return row
+        await db.User.create({
+            email: email,
+            username: username,
+            password: hashPassWord,
+        })
     } catch (error) {
         console.log({ error });
         throw error; // Re-throwing the error to handle it in the caller function if needed.
@@ -22,9 +25,8 @@ const createNewUser = async (email, name, password) => {
 
 const getListUser = async () => {
     try {
-        const connection = await connectionMysql();
-        const [row, fields] = await connection.execute('SELECT * FROM `users`');
-        return row;
+        const users = await db.User.findAll();
+        return users
     } catch (error) {
         console.log({ error });
         throw error; // Re-throwing the error to handle it in the caller function if needed.
@@ -33,9 +35,11 @@ const getListUser = async () => {
 
 const deleteUser = async (id) => {
     try {
-        const connection = await connectionMysql();
-        const [row, fields] = await connection.execute('DELETE FROM `users` WHERE id=?',[id]);
-        return row;
+        await db.User.destroy({
+            where: {
+              id: id,
+            }
+          });
     } catch (error) {
         console.log({ error });
         throw error; // Re-throwing the error to handle it in the caller function if needed.
@@ -55,11 +59,16 @@ const getUserById = async (id) => {
     }
 }
 
-const updateUser = async (id, email, name) => {
+const updateUser = async (id, email, username) => {
     try {
-        const connection = await connectionMysql();
-        const [row, fields] = await connection.execute('UPDATE `users` SET `email`=?, `name`=? WHERE id=?',[email, name, id]);
-        return row;
+        await db.User.update({
+            email: email,
+            username: username,
+        }, {
+            where: {
+                id: id
+            }
+        });
     } catch (error) {
         console.log({ error });
         throw error; // Re-throwing the error to handle it in the caller function if needed.

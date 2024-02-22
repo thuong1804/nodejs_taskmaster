@@ -11,10 +11,10 @@ const handelUserController = (req, res) => {
 
 const handelCreateUserController = async (req, res) => {
     let email = req.body.email;
-    let name = req.body.name;
+    let username = req.body.username;
     let password = req.body.password;
-
-   await userService.createNewUser(email, name, password)
+    console.log(req.body)
+   await userService.createNewUser(email, username, password)
     return res.redirect("/user/get-list");
 }
 
@@ -36,9 +36,9 @@ const handelGetIdByUserController = async (req, res) => {
 
 const handelUpdateUser = async (req, res) => {
     let email = req.body.email;
-    let name = req.body.name;
+    let username = req.body.username;
     let id = req.body.id;
-    await userService.updateUser(id, email, name);
+    await userService.updateUser(id, email, username);
     return res.redirect("/user/get-list");
 }
 

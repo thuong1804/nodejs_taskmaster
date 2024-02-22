@@ -16,7 +16,7 @@
             <th scope="col">Id</th>
             <th scope="col">Email</th>
             <th scope="col">Name</th>
-            <th scope="col">Handle</th>
+            <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -24,7 +24,7 @@
             <tr>
               <th scope="row"><%=item.id%></th>
               <td><%=item.email%></td>
-              <td><%=item.name%></td>
+              <td><%=item.username%></td>
               <td style="display: flex; gap: 20px;">
                 <form method="POST" action="/update-user/<%=item.id%>">
                   <button type="submit" class="btn btn-warning">Edit</button>

@@ -17,24 +17,30 @@ module.exports = {
       {
         email: 'Hahahaha@hhih.com',
         username: 'John Doe',
+        address: '1212212',
         password: '1212212',
+        gender: true,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        email: 'bebbee@hhih.com',
-        username: 'John @@',
+        email: 'Hahahaha@hhih.com',
+        username: 'John Doe',
+        address: '1212212',
         password: '1212212',
+        gender: true,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        email: 'kakkaaa@hhih.com',
-        username: 'John ccc',
+        email: 'Hahahaha@hhih.com',
+        username: 'John Doe',
+        address: '1212212',
         password: '1212212',
+        gender: true,
         createdAt: new Date(),
         updatedAt: new Date(),
-      }
+      },
     ], {});
   },
 

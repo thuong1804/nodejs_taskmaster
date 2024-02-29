@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  'config': path.resolve('/node-cell-phone/src/', 'database.json'),
+  'config': path.resolve('/node-cell-phone/src/config', 'database.json'),
   'models-path': path.resolve('/node-cell-phone/src/', 'models'),
   'seeders-path': path.resolve('/node-cell-phone/src/', 'seeders'),
   'migrations-path': path.resolve('/node-cell-phone/src/', 'migrations')

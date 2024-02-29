@@ -8,13 +8,14 @@ const hashUserPassWord = (password) => {
    return bcrypt.hashSync(password, salt);
 }
 
-const createNewUser = async (email, username, password) => {
+const createNewUser = async (email, username, address, gender, password) => {
     try {
-        let hashPassWord = hashUserPassWord(password);
         await db.User.create({
             email: email,
             username: username,
-            password: hashPassWord,
+            address: address,
+            gender: gender,
+            password: password,
         })
     } catch (error) {
         console.log({ error });
@@ -25,7 +26,14 @@ const createNewUser = async (email, username, password) => {
 
 const getListUser = async () => {
     try {
-        const users = await db.User.findAll();
+        const users = await db.User.findAll({
+            include: {
+                model: db.Group,
+            },
+            raw: true,
+            nest: true
+        });
+        console.log({users})
         return users
     } catch (error) {
         console.log({ error });

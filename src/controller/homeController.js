@@ -9,20 +9,6 @@ const handelUserController = (req, res) => {
     return res.render("user.ejs", { homeRouter });
 }
 
-const handelCreateUserController = async (req, res) => {
-    let email = req.body.email;
-    let username = req.body.username;
-    let password = req.body.password;
-    console.log(req.body)
-   await userService.createNewUser(email, username, password)
-    return res.redirect("/user/get-list");
-}
-
-const handelGetListUser = async (req, res) => {
-    const userList = await userService.getListUser();
-    return res.render("getListUser.ejs", {userList});
-}
-
 const handelDeleteUser = async (req, res) => {
     await userService.deleteUser(req.params.id)
     return res.redirect("/user/get-list");
@@ -45,8 +31,6 @@ const handelUpdateUser = async (req, res) => {
 module.exports = {
     handelHomeController,
     handelUserController,
-    handelCreateUserController,
-    handelGetListUser,
     handelDeleteUser,
     handelGetIdByUserController,
     handelUpdateUser,

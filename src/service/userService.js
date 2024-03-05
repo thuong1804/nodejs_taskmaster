@@ -27,8 +27,10 @@ const createNewUser = async (email, username, address, gender, password) => {
 const getListUser = async () => {
     try {
         const users = await db.User.findAll({
+            attributes: ['id', 'email', 'name', 'address', 'gender', 'groupId'],
             include: {
                 model: db.Group,
+                attributes: ['name', 'description']
             },
             raw: true,
             nest: true
@@ -58,20 +60,26 @@ const deleteUser = async (id) => {
 
 const getUserById = async (id) => {
     try {
-        const connection = await connectionMysql();
-        const [row, fields] = await connection.execute('SELECT * FROM `users` WHERE id=?',[id]);
-        return row;
+        const user = await db.User.findOne({
+            where: {
+                id
+            }
+        });
+        return user;
     } catch (error) {
         console.log({ error });
-        throw error; // Re-throwing the error to handle it in the caller function if needed.
+        throw error;
     }
 }
 
-const updateUser = async (id, email, username) => {
+const updateUser = async (id, email, name, address, gender, groupId) => {
     try {
         await db.User.update({
-            email: email,
-            username: username,
+            email,
+            name,
+            groupId,
+            address,
+            gender
         }, {
             where: {
                 id: id

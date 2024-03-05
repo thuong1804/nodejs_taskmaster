@@ -12,7 +12,7 @@ const getListTask = async () => {
         const users = await db.Task.findAll({
             include: {
                 model: db.User,
-                attributes: ['id', 'email', 'username']
+                attributes: ['id', 'email', 'name']
             },
 
         });

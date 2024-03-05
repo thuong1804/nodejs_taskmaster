@@ -2,7 +2,6 @@ import userService from '../service/userService'
 import db from '../models/index'
 
 const handelGetListUser = async (req, res) => {
-    console.log({ req })
     try {
         const userList = await userService.getListUser();
         if (!userList) {
@@ -14,9 +13,9 @@ const handelGetListUser = async (req, res) => {
         }
         return res.status(200).json({
             status: "success",
-            message: 'Thank you for registering with us. Your account has been successfully created.',
+            message: 'Get list success',
             data: {
-                content: req.body
+                content: userList
             },
             result: true,
         })
@@ -60,7 +59,83 @@ const handelCreateUserController = async (req, res) => {
     }
 }
 
+const handelDeleteUser = async (req, res) => {
+    const id = req.params.id
+    try {
+        await userService.deleteUser(id);
+        return res.status(200).json({
+            status: "success",
+            message: 'Get list success',
+            data: {
+                userId: id
+            },
+            result: true,
+        })
+    } catch (error) {
+        res.status(500).json({
+            status: "error",
+            code: 500,
+            data: [],
+            message: "Internal Server Error",
+        });
+    }
+}
+
+const handelGetByIdUser = async (req, res) => {
+    const id = req.params.id
+    try {
+    const user = await userService.getUserById(id);
+        return res.status(200).json({
+            status: "success",
+            message: 'Get list success',
+            data: {
+                content: user
+            },
+            result: true,
+        })
+    } catch (error) {
+        res.status(500).json({
+            status: "error",
+            code: 500,
+            data: [],
+            message: "Internal Server Error",
+        });
+    }
+}
+
+const handelUpdateUser = async (req, res) => {
+    const {id, email, name, address, gender, groupId} = req.body
+    try {
+   await userService.updateUser(id, email, name, address, gender, groupId);
+        return res.status(200).json({
+            status: "success",
+            message: 'Update user success',
+            data: {
+                content:  {
+                    email,
+                    name,
+                    address,
+                    gender,
+                    groupId
+                }
+            },
+            result: true,
+        })
+    } catch (error) {
+        console.log({error})
+        res.status(500).json({
+            status: "error",
+            code: 500,
+            data: [],
+            message: "Internal Server Error",
+        });
+    }
+}
+
 module.exports = {
     handelCreateUserController,
     handelGetListUser,
+    handelDeleteUser,
+    handelGetByIdUser,
+    handelUpdateUser,
 }

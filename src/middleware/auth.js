@@ -1,19 +1,34 @@
 import jwt from 'jsonwebtoken';
 require('dotenv').config();
+import db from '../models/index'
 
-const verifyToken = (req, res, next) => {
-    const authHeader = req.header('Authorization');
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (!token) return res.status(401);
+const verifyRefreshToken = async (refreshToken) => {
+    const privateKey = process.env.ACCESS_TOKEN_SECRET_REFRESH;
     try {
-        const decode = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
-        console.log({ decode })
-        next();
-    } catch (error) {
-        console.log({ error });
-        return res.status(403);
-    }
+        const tokenDetails = jwt.verify(refreshToken, privateKey);
+        return tokenDetails
+      } catch (error) {
+        console.error('Error:', error);
+        return Promise.reject({ error: true, message: "Invalid refresh token" });
+      }
 }
 
-module.exports = verifyToken;
+const authenticatedToken = (req, res, next) => {
+    const authorizationHeader = req.headers?.['authorization'];
+    const token = authorizationHeader?.split(' ')?.[1];
+    if (!token) return res?.sendStatus(401);
+    try {
+        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, data) => {
+            if(error) return res.sendStatus(401);
+            next();
+        });
+    } catch (error) {
+        console.error({error});
+        return res.sendStatus(500);
+    }
+};
+
+module.exports = {
+    verifyRefreshToken,
+    authenticatedToken,
+};

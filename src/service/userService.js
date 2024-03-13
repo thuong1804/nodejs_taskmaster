@@ -1,6 +1,7 @@
 import connectionMysql from '../config/connectionMysql'
 import bcrypt from 'bcryptjs';
 import db from '../models/index'
+import { emit } from 'nodemon';
 const  salt = bcrypt.genSaltSync(10);
 
 
@@ -35,7 +36,6 @@ const getListUser = async () => {
             raw: true,
             nest: true
         });
-        console.log({users})
         return users
     } catch (error) {
         console.log({ error });
@@ -48,8 +48,27 @@ const deleteUser = async (id) => {
         await db.User.destroy({
             where: {
               id: id,
-            }
+            },
           });
+    } catch (error) {
+        console.log({ error });
+        throw error; // Re-throwing the error to handle it in the caller function if needed.
+    }
+}
+
+const getProfileUser = async (email) => {
+    try {
+       const user = await db.User.findOne({
+            where: {
+              email: email,
+            },
+            attributes: ['id', 'email', 'name', 'address', 'gender', 'groupId'],
+            include: {
+                model: db.Group,
+                attributes: ['name', 'description']
+            },
+          });
+          return user
     } catch (error) {
         console.log({ error });
         throw error; // Re-throwing the error to handle it in the caller function if needed.
@@ -96,4 +115,5 @@ module.exports = {
     deleteUser,
     updateUser,
     getUserById,
+    getProfileUser,
 }

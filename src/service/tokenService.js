@@ -1,24 +1,37 @@
 import jwt from 'jsonwebtoken';
 require('dotenv').config();
+import db from '../models/index'
 
-const generateToken = (payload) => {
-    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn:'2h'
-    })
-    const refreshToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET_REFRESH, {
-        expiresIn:'2h'
-    })
-
-    return {accessToken, refreshToken}
+const generateToken = async (payload) => {
+    try {
+        const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+            expiresIn: '30s'
+        })
+        const refreshToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET_REFRESH, {
+            expiresIn: '10m'
+        })
+        const existingUserToken = await db.UserToken.findOne(
+            {
+                where: { userId: payload.userId }
+            });
+        if (existingUserToken) {
+            await existingUserToken.destroy();
+        }
+        await db.UserToken.create({ userId: payload.userId, token: refreshToken });
+        return Promise.resolve({ accessToken, refreshToken });
+    } catch (error) {
+        console.error('Error:', error);
+        return Promise.reject(error);
+    }
 }
 
 const updateRefreshToken = (users, refreshToken) => {
-   if (users) {
-    return {
-        ...users,
-        refreshToken: refreshToken,
+    if (users) {
+        return {
+            ...users,
+            refreshToken: refreshToken,
+        }
     }
-   }
 }
 module.exports = {
     generateToken,

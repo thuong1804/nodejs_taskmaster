@@ -18,7 +18,7 @@ app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
   // Request headers you wish to allow
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
 
   // Set to true if you need the website to include cookies in the requests sent
   // to the API (e.g. in case you use sessions)
@@ -37,9 +37,9 @@ app.use(cookieParser())
 //config body-parse
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-
 //initWebRoutes
 initWebRoutes(app);
+
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)

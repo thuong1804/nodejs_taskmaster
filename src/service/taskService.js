@@ -3,20 +3,26 @@ import db from '../models/index'
 
 const getListTask = async () => {
     try {
-        // const users = await db.Task.findOne({
-        //     where: {id: 1},
-        //     include: {model: db.User },
-        //     raw: true,
-        //     nest: true,
-        // });
-        const users = await db.Task.findAll({
+        const tasks = await db.Task.findAll({
+            // where: {
+            //     email: email
+            // },
+            include: {model: db.User },
+            raw: true,
+            nest: true,
             include: {
                 model: db.User,
                 attributes: ['id', 'email', 'name']
             },
-
         });
-        return users
+        // const users = await db.Task.findAll({
+        //     include: {
+        //         model: db.User,
+        //         attributes: ['id', 'email', 'name']
+        //     },
+
+        // });
+        return tasks
     } catch (error) {
         console.log({ error });
         throw error;

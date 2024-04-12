@@ -3,30 +3,24 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Task extends Model {
+  class AuthenticationCode extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+
       // define association here
-      Task.belongsTo(models.User)
     }
   }
-  Task.init({
-    userId:  DataTypes.STRING,
-    taskTitle: DataTypes.STRING,
-    taskDescription: DataTypes.STRING,
-    scheduledDate: DataTypes.DATE,
-    completedDate: DataTypes.DATE,
-    reporter: DataTypes.INTEGER,
-    isInProgress: DataTypes.BOOLEAN,
-    isCompleted: DataTypes.BOOLEAN
-
+  AuthenticationCode.init({
+    code: DataTypes.STRING,
+    emailUser: DataTypes.STRING,
   }, {
     sequelize,
-    modelName: 'Task',
+    modelName: 'AuthenticationCode',
+    timestamps: false
   });
-  return Task;
+  return AuthenticationCode;
 };

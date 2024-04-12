@@ -1,7 +1,5 @@
-import connectionMysql from '../config/connectionMysql'
 import bcrypt from 'bcryptjs';
 import db from '../models/index'
-import { emit } from 'nodemon';
 const  salt = bcrypt.genSaltSync(10);
 
 
@@ -9,14 +7,15 @@ const hashUserPassWord = (password) => {
    return bcrypt.hashSync(password, salt);
 }
 
-const createNewUser = async (email, username, address, gender, password) => {
+const createNewUser = async (email, name, address, gender, password, groupId) => {
     try {
         await db.User.create({
             email: email,
-            username: username,
+            name: name,
             address: address,
             gender: gender,
             password: password,
+            groupId: groupId,
         })
     } catch (error) {
         console.log({ error });

@@ -25,6 +25,14 @@ module.exports = {
       completedDate: {
         type: Sequelize.DATE
       },
+      reporter: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      isCompleted: {
+        type: Sequelize.BOOLEAN,
+        allowNull: true,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -35,6 +43,7 @@ module.exports = {
       }
     });
   },
+  
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Tasks');
   }

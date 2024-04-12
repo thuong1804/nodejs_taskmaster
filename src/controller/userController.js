@@ -1,7 +1,6 @@
 import userService from '../service/userService'
 import db from '../models/index'
 import jwt from 'jsonwebtoken';
-import { authenticatedToken } from '../middleware/auth'
 
 
 const handelGetListUser = async (req, res) => {
@@ -35,7 +34,7 @@ const handelGetListUser = async (req, res) => {
 
 const handelCreateUserController = async (req, res) => {
     try {
-        const { email, username, address, gender, password } = req.body;
+        const { email, name, address, gender, password, groupId} = req.body;
         const existingUser = await db.User.findOne({ where: { email } });
         if (existingUser) {
             return res.status(400).json({
@@ -44,7 +43,7 @@ const handelCreateUserController = async (req, res) => {
                 message: "It seems you already have an account, please log in instead.",
             });
         }
-        await userService.createNewUser(email, username, address, gender, password)
+        await userService.createNewUser(email, name, address, gender, password, groupId)
         return res.status(200).json({
             status: "success",
             message: 'Thank you for registering with us. Your account has been successfully created.',
@@ -70,7 +69,7 @@ const handelDeleteUser = async (req, res) => {
         await userService.deleteUser(id);
         return res.status(200).json({
             status: "success",
-            message: 'Get list success',
+            message: 'Delete user success',
             data: {
                 userId: id
             },

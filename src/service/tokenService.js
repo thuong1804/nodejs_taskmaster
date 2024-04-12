@@ -5,10 +5,10 @@ import db from '../models/index'
 const generateToken = async (payload) => {
     try {
         const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-            expiresIn: '30s'
+            expiresIn: '30m'
         })
         const refreshToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET_REFRESH, {
-            expiresIn: '10m'
+            expiresIn: '3d'
         })
         const existingUserToken = await db.UserToken.findOne(
             {

@@ -4,8 +4,9 @@ import jwt from 'jsonwebtoken';
 
 
 const handelGetListUser = async (req, res) => {
+    const {email} = req.body
     try {
-        const userList = await userService.getListUser();
+        const userList = await userService.getListUser(email);
         if (!userList) {
             return res.status(400).json({
                 status: "failed",

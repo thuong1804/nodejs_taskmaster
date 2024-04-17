@@ -1,9 +1,29 @@
 import db from '../models/index'
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 
-const getListTask = async (userId, groupId) => {
+const getListTask = async (userId, groupId, taskTitle, reporter) => {
     try {
         if (groupId === 1) {
+            let whereCondition = {};
+            if (taskTitle || reporter) {
+                whereCondition = {
+                    [Op.or]: []
+                };
+                if (taskTitle) {
+                    whereCondition[Op.or].push({
+                        taskTitle: {
+                            [Op.like]: `%${taskTitle}%`
+                        }
+                    });
+                }
+                if (reporter) {
+                    whereCondition[Op.or].push({
+                        reporter: {
+                            [Op.eq]: parseInt(reporter) || null
+                        }
+                    });
+                }
+            }
             const tasks = await db.Task.findAll({
                 raw: true,
                 nest: true,
@@ -11,6 +31,7 @@ const getListTask = async (userId, groupId) => {
                     model: db.User,
                     attributes: ['id', 'email', 'name']
                 },
+                where: whereCondition
             });
             return tasks
         } else {
@@ -146,17 +167,21 @@ const getTaskById = async (id) => {
 }
 
 const searchTask = async (query) => {
+    console.log({ query })
     try {
         const tasks = await db.Task.findAll({
             where: {
+
                 [Op.or]: [
                     {
                         taskTitle: {
-                            [Op.like]: `%${query.taskTitle}%`
+                            [Op.like]: `%${query}%`
                         }
                     },
                     // {
-                    //     reporter: parseInt(query.reporter || null)
+                    //     reporter: {
+                    //         [Op.eq]: parseInt(query.reporter) || null
+                    //     }
                     // }
                 ]
             }
@@ -168,7 +193,7 @@ const searchTask = async (query) => {
     }
 }
 
-const taskInProgress = async(id, isInProgress) => {
+const taskInProgress = async (id, isInProgress) => {
     try {
         const tasks = await db.Task.update({
             isInProgress: isInProgress,
@@ -181,12 +206,12 @@ const taskInProgress = async(id, isInProgress) => {
         });
         return tasks
     } catch (error) {
-        console.log({error})
+        console.log({ error })
         throw error;
     }
 }
 
-const taskCompleted = async(id, isCompleted) => {
+const taskCompleted = async (id, isCompleted) => {
     try {
         const tasks = await db.Task.update({
             isCompleted: isCompleted
@@ -199,12 +224,12 @@ const taskCompleted = async(id, isCompleted) => {
         });
         return tasks
     } catch (error) {
-        console.log({error})
+        console.log({ error })
         throw error;
     }
 }
 
-module.exports= {
+module.exports = {
     getListTask,
     createTask,
     deleteTask,

@@ -15,9 +15,10 @@ const initWebRoutes = (app) => {
     router.post('/register', authController.register)
     router.post('/sendEmail', authController.handelForgotPassword)
     router.post('/recover-code', authController.VerifyAuthenticationOTP)
+    router.post('/change-password-forgot', authController.handelUpdatePasswordForget)
+    router.post('/change-password', authenticatedToken, authController.handelUpdatePassword)
 
-
-    router.get('/api/users', authenticatedToken, UserController.handelGetListUser)
+    router.post('/api/users', authenticatedToken, UserController.handelGetListUser)
     router.post('/api/delete-user/:id', authenticatedToken,UserController.handelDeleteUser)
     router.post('/api/create-user', authenticatedToken, UserController.handelCreateUserController)
     router.get('/api/profile', authenticatedToken, UserController.handelGetProfileUser)
@@ -33,7 +34,6 @@ const initWebRoutes = (app) => {
     router.post('/api/search', authenticatedToken, taskController.handelSearchTask)
     router.post('/api/task-progress', authenticatedToken, taskController.handelTaskInProgress),
     router.post('/api/task-completed', authenticatedToken, taskController.handelTaskCompleted)
-
 
 
 

@@ -1,10 +1,11 @@
 import bcrypt from 'bcryptjs';
 import db from '../models/index'
-const  salt = bcrypt.genSaltSync(10);
+import { Op, where } from 'sequelize';
+const salt = bcrypt.genSaltSync(10);
 
 
 const hashUserPassWord = (password) => {
-   return bcrypt.hashSync(password, salt);
+    return bcrypt.hashSync(password, salt);
 }
 
 const createNewUser = async (email, name, address, gender, password, groupId) => {
@@ -24,8 +25,19 @@ const createNewUser = async (email, name, address, gender, password, groupId) =>
 
 }
 
-const getListUser = async () => {
+const getListUser = async (email) => {
     try {
+        let whereCondition = {};
+        if (email) {
+            whereCondition = {
+                [Op.or]: []
+            };
+            whereCondition[Op.or].push({
+                email: {
+                    [Op.like]: `%${email}%`
+                }
+            });
+        }
         const users = await db.User.findAll({
             attributes: ['id', 'email', 'name', 'address', 'gender', 'groupId'],
             include: {
@@ -33,7 +45,8 @@ const getListUser = async () => {
                 attributes: ['name', 'description']
             },
             raw: true,
-            nest: true
+            nest: true,
+            where: whereCondition
         });
         return users
     } catch (error) {
@@ -46,9 +59,9 @@ const deleteUser = async (id) => {
     try {
         await db.User.destroy({
             where: {
-              id: id,
+                id: id,
             },
-          });
+        });
     } catch (error) {
         console.log({ error });
         throw error; // Re-throwing the error to handle it in the caller function if needed.
@@ -57,17 +70,17 @@ const deleteUser = async (id) => {
 
 const getProfileUser = async (email) => {
     try {
-       const user = await db.User.findOne({
+        const user = await db.User.findOne({
             where: {
-              email: email,
+                email: email,
             },
             attributes: ['id', 'email', 'name', 'address', 'gender', 'groupId'],
             include: {
                 model: db.Group,
                 attributes: ['name', 'description']
             },
-          });
-          return user
+        });
+        return user
     } catch (error) {
         console.log({ error });
         throw error; // Re-throwing the error to handle it in the caller function if needed.

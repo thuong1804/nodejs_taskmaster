@@ -3,6 +3,9 @@ import { generateToken } from '../service/tokenService'
 import { verifyRefreshToken } from '../middleware/auth'
 import jwt from 'jsonwebtoken';
 import db from '../models/index'
+import { where } from 'sequelize';
+import { checkPassword } from '../constants';
+
 
 require('dotenv').config();
 
@@ -62,14 +65,57 @@ const logout = async (req, res) => {
     }
 }
 
-const register = async (req, res) => {
-    const { email, name, password, confirmPassword } = req.body
+const handelUpdatePassword = async (req, res) => {
+    const {email, password, newPassword} = req.body;
+
     try {
-        if (password !== confirmPassword) {
+        const user = await db.User.findOne({
+            where:{
+                email: email,
+            }
+        })
+        const passwordMatch = checkPassword(password, user.password);
+        if (!passwordMatch) {
+            return res.status(404).json({
+                status: 'error',
+                code: 400,
+                message: "Invalid current password",
+            })
+        }
+        if (newPassword.length < 8) {
             return res.status(400).json({
                 status: 'error',
                 code: 400,
-                message: "Confirm password is not correct",
+                message: "Password is too short. Please enter a password with at least 8 characters.",
+            })
+        }
+        await auth.updatePassword(email, password, newPassword);
+        return res.status(200).json({
+            status: 'login success',
+            result: true,
+            data: {
+                password,
+                newPassword,
+            }
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({
+            status: "error",
+            code: 500,
+            message: "Internal Server Error",
+        });
+    }
+}
+
+const register = async (req, res) => {
+    const { email, name, password, confirmPassword } = req.body
+    try {
+        if (password.length < 8) {
+            return res.status(400).json({
+                status: 'error',
+                code: 400,
+                message: "Password is too short. Please enter a password with at least 8 characters.",
             })
         }
         const accountNew = await auth.register(email, name, password, confirmPassword)
@@ -160,6 +206,32 @@ const VerifyAuthenticationOTP = async (req, res) => {
     }
 }
 
+const handelUpdatePasswordForget = async(req, res) => {
+    const {email, password} = req.body;
+    if (password.length < 8) {
+        return res.status(400).json({
+            status: 'error',
+            code: 400,
+            message: "Password is too short. Please enter a password with at least 8 characters.",
+        })
+    }
+    try {
+        await auth.updatePasswordForgot(email, password)
+        return res.status(200).json({
+            status: 'Change Password success',
+            result: true
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({
+            status: "error",
+            code: 500,
+            message: "Internal Server Error",
+        });
+    }
+
+}
+
 module.exports = {
     login,
     logout,
@@ -167,4 +239,6 @@ module.exports = {
     register,
     handelForgotPassword,
     VerifyAuthenticationOTP,
+    handelUpdatePasswordForget,
+    handelUpdatePassword,
 }

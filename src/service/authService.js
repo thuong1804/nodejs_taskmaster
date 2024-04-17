@@ -1,20 +1,15 @@
 import { where } from 'sequelize';
 import db from '../models/index';
-import bcrypt from 'bcryptjs';
-const salt = bcrypt.genSaltSync(10);
+import { checkPassword, hashUserPassWord } from '../constants';
+
 const nodemailer = require('nodemailer');
 const otpGenerator = require('otp-generator')
+const expiresIn = '1m';
 
-const hashUserPassWord = (password) => {
-    const hashPass = bcrypt.hashSync(password, salt);
-    return hashPass;
-}
 
-const checkPassword = (inputPassword, hashPassword) => {
-    return bcrypt.compareSync(inputPassword, hashPassword);
-}
 
 const OTP = otpGenerator.generate(6, {
+    expiresIn,
     digits: true,
     lowerCaseAlphabets: false,
     upperCaseAlphabets: false,
@@ -39,13 +34,51 @@ const login = async (email, password) => {
     }
 }
 
+const updatePassword = async (email, password, newPassword) => {
+    try {
+        const user = await db.User.findOne({
+            where:{
+                email: email,
+            }
+        })
+        const passwordMatch = checkPassword(password, user.password);
+        if (!passwordMatch) {
+            throw new Error("Incorrect password");
+        }
+        await db.User.update({
+            password: hashUserPassWord(newPassword),
+        }, {
+            where: {
+                email: email,
+            }
+        })
+    } catch (error) {
+        console.log({ error });
+        throw error;
+    }
+}
+
+const updatePasswordForgot = async (email, password) => {
+    try {
+        await db.User.update({
+            password: hashUserPassWord(password),
+        }, {
+            where: {
+                email: email,
+            }
+        })
+    } catch (error) {
+        console.log({ error });
+        throw error;
+    }
+}
+
 const register = async (email, name, password) => {
     try {
         const user = await db.User.create({
             email,
             name,
             password: hashUserPassWord(password),
-            confirmPassword: hashUserPassWord(password),
         },
     )
         return user;
@@ -105,6 +138,9 @@ const forgotPassword = async (email) => {
 }
 
 const authenticationOTP = async(code, emailUSer) => {
+    if (OTP !== code) {
+        throw new Error("Invalid authentication code");
+    }
     try {
         await db.AuthenticationCode.findOne({
             where: {
@@ -125,4 +161,6 @@ module.exports = {
     register,
     forgotPassword,
     authenticationOTP,
+    updatePasswordForgot,
+    updatePassword,
 }

@@ -10,20 +10,18 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
       Task.belongsTo(models.User)
     }
   }
   Task.init({
-    userId:  DataTypes.STRING,
+    userId: DataTypes.NUMBER,
     taskTitle: DataTypes.STRING,
     taskDescription: DataTypes.STRING,
     scheduledDate: DataTypes.DATE,
     completedDate: DataTypes.DATE,
-    reporter: DataTypes.INTEGER,
-    isInProgress: DataTypes.BOOLEAN,
-    isCompleted: DataTypes.BOOLEAN
-
+    reporter: DataTypes.NUMBER,
+    owner: DataTypes.NUMBER,
+    status: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Task',

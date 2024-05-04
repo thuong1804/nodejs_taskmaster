@@ -3,8 +3,7 @@ import { generateToken } from '../service/tokenService'
 import { verifyRefreshToken } from '../middleware/auth'
 import jwt from 'jsonwebtoken';
 import db from '../models/index'
-import { where } from 'sequelize';
-import { checkPassword } from '../constants';
+import { checkPassword } from '../utils';
 
 
 require('dotenv').config();
@@ -12,16 +11,27 @@ require('dotenv').config();
 const login = async (req, res) => {
     const { email, password } = req.body;
     try {
-        const user = await auth.login(email, password);
+        const user = await auth.login(email);
+        if (!user) {
+            return res.status(404).json({
+                status: 'User don`t exits',
+                result: false,
+            })
+        }
+
         const payload = {
             userId: user.id,
             email: email,
             groupId: user.groupId,
         };
-        if (!user) {
-            return res.status(404).json({
-                status: 'User don`t exits',
+     
+        const passwordMatch = checkPassword(password, user.password);
+        if (!passwordMatch) {
+                return res.status(400).json({
+                status: 'INCORRECT_PASSWORD',
                 result: false,
+                code: 400,
+                message: "Incorrect password",
             })
         }
         const { accessToken, refreshToken } = await generateToken(payload)
@@ -110,10 +120,22 @@ const handelUpdatePassword = async (req, res) => {
 
 const register = async (req, res) => {
     const { email, name, password, confirmPassword } = req.body
+    const existingEmail = await db.User.findOne({
+       where: {
+        email: email
+       }
+    })
+    if (existingEmail) {
+        return res.status(400).json({
+            status: 'EMAIL_ERROR',
+            code: 400,
+            message: "Email existing",
+        })
+    }
     try {
         if (password.length < 8) {
             return res.status(400).json({
-                status: 'error',
+                status: 'PASSWORD_ERROR',
                 code: 400,
                 message: "Password is too short. Please enter a password with at least 8 characters.",
             })

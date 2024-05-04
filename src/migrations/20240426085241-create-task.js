@@ -10,7 +10,6 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       userId: {
-        allowNull: false,
         type: Sequelize.INTEGER
       },
       taskTitle: {
@@ -26,12 +25,13 @@ module.exports = {
         type: Sequelize.DATE
       },
       reporter: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
+        type: Sequelize.INTEGER
       },
-      isCompleted: {
-        type: Sequelize.BOOLEAN,
-        allowNull: true,
+      owner: {
+        type: Sequelize.INTEGER
+      },
+      status: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
@@ -43,7 +43,6 @@ module.exports = {
       }
     });
   },
-  
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Tasks');
   }

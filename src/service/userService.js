@@ -3,11 +3,6 @@ import db from '../models/index'
 import { Op, where } from 'sequelize';
 const salt = bcrypt.genSaltSync(10);
 
-
-const hashUserPassWord = (password) => {
-    return bcrypt.hashSync(password, salt);
-}
-
 const createNewUser = async (email, name, address, gender, password, groupId) => {
     try {
         await db.User.create({

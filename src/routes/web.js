@@ -32,8 +32,8 @@ const initWebRoutes = (app) => {
     router.put('/api/update-task', authenticatedToken, taskController.handelUpdateTask)
     router.post('/api/get-id-task/:id', authenticatedToken, taskController.handelGetTaskById)
     router.post('/api/search', authenticatedToken, taskController.handelSearchTask)
-    router.post('/api/task-progress', authenticatedToken, taskController.handelTaskInProgress),
-    router.post('/api/task-completed', authenticatedToken, taskController.handelTaskCompleted)
+    router.post('/api/status', authenticatedToken, taskController.handelUpdateStatus)
+
 
 
 

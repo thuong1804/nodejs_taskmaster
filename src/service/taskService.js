@@ -3,26 +3,24 @@ const { Op, where } = require("sequelize");
 
 const getListTask = async (userId, groupId, taskTitle, reporter) => {
     try {
-        if (groupId === 1) {
+        if (taskTitle || reporter) {
             let whereCondition = {};
-            if (taskTitle || reporter) {
-                whereCondition = {
-                    [Op.or]: []
-                };
-                if (taskTitle) {
-                    whereCondition[Op.or].push({
-                        taskTitle: {
-                            [Op.like]: `%${taskTitle}%`
-                        }
-                    });
-                }
-                if (reporter) {
-                    whereCondition[Op.or].push({
-                        reporter: {
-                            [Op.eq]: parseInt(reporter) || null
-                        }
-                    });
-                }
+            whereCondition = {
+                [Op.or]: []
+            };
+            if (taskTitle) {
+                whereCondition[Op.or].push({
+                    taskTitle: {
+                        [Op.like]: `%${taskTitle}%`
+                    }
+                });
+            }
+            if (reporter) {
+                whereCondition[Op.or].push({
+                    reporter: {
+                        [Op.eq]: parseInt(reporter) || null
+                    }
+                });
             }
             const tasks = await db.Task.findAll({
                 raw: true,
@@ -48,6 +46,10 @@ const getListTask = async (userId, groupId, taskTitle, reporter) => {
             });
             return tasks
         }
+
+
+
+
     } catch (error) {
         console.log({ error });
         throw error;
@@ -94,7 +96,9 @@ const createTask = async (
     taskDescription,
     scheduledDate,
     completedDate,
-    reporter
+    reporter,
+    owner,
+    status,
 ) => {
     try {
         await db.Task.create({
@@ -104,6 +108,8 @@ const createTask = async (
             scheduledDate: scheduledDate,
             completedDate: completedDate,
             reporter: reporter,
+            owner: owner,
+            status: status,
         })
     } catch (error) {
         console.log({ error });
@@ -118,7 +124,8 @@ const updateTask = async (
     taskDescription,
     scheduledDate,
     completedDate,
-    reporter
+    reporter,
+    owner,
 ) => {
     try {
         await db.Task.update({
@@ -127,7 +134,8 @@ const updateTask = async (
             taskDescription: taskDescription,
             scheduledDate: scheduledDate,
             completedDate: completedDate,
-            reporter: reporter
+            reporter: reporter,
+            owner: owner,
         }, {
             where: {
                 id: id,
@@ -167,7 +175,6 @@ const getTaskById = async (id) => {
 }
 
 const searchTask = async (query) => {
-    console.log({ query })
     try {
         const tasks = await db.Task.findAll({
             where: {
@@ -193,28 +200,10 @@ const searchTask = async (query) => {
     }
 }
 
-const taskInProgress = async (id, isInProgress) => {
+const updateStatus = async (id, status) => {
     try {
         const tasks = await db.Task.update({
-            isInProgress: isInProgress,
-        }, {
-            where: {
-                id: {
-                    [Op.in]: id
-                }
-            }
-        });
-        return tasks
-    } catch (error) {
-        console.log({ error })
-        throw error;
-    }
-}
-
-const taskCompleted = async (id, isCompleted) => {
-    try {
-        const tasks = await db.Task.update({
-            isCompleted: isCompleted
+            status: status
         }, {
             where: {
                 id: {
@@ -237,6 +226,5 @@ module.exports = {
     getListTaskWithPagination,
     getTaskById,
     searchTask,
-    taskCompleted,
-    taskInProgress,
+    updateStatus,
 }

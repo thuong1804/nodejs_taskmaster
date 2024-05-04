@@ -1,6 +1,6 @@
 import { where } from 'sequelize';
 import db from '../models/index';
-import { checkPassword, hashUserPassWord } from '../constants';
+import { checkPassword, hashUserPassWord } from '../utils';
 
 const nodemailer = require('nodemailer');
 const otpGenerator = require('otp-generator')
@@ -16,17 +16,17 @@ const OTP = otpGenerator.generate(6, {
     specialChars: false,
 });
 
-const login = async (email, password) => {
+const login = async (email) => {
     try {
         const user = await db.User.findOne({
             where: {
                 email: email,
             }
         })
-        const passwordMatch = checkPassword(password, user.password);
-        if (!passwordMatch) {
-            throw new Error("Incorrect password");
-        }
+        // const passwordMatch = checkPassword(password, user.password);
+        // if (!passwordMatch) {
+        //     throw new Error("Incorrect password");
+        // }
         return user;
     } catch (error) {
         console.log({ error });

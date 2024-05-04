@@ -2,12 +2,17 @@ import initWebRoutes from './routes/web';
 import configViewEngine from './config/viewEngine';
 import express from 'express';
 import bodyParser from 'body-parser';
+var cors = require('cors')
 import cookieParser from 'cookie-parser';
 
 require('dotenv').config();
 
+
 const app = express();
+// app.use(cors())
+
 const port = process.env.PORT || 3005;
+
 
 app.use(function (req, res, next) {
 

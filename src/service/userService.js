@@ -1,21 +1,31 @@
-import bcrypt from 'bcryptjs';
 import db from '../models/index'
-import { Op, where } from 'sequelize';
-const salt = bcrypt.genSaltSync(10);
+import { Op } from 'sequelize';
+import { hashUserPassWord } from '../utils';
 
-const createNewUser = async (email, name, address, gender, password, groupId) => {
+const createNewUser = async (
+    email, 
+    name, 
+    address, 
+    gender, 
+    password, 
+    groupId, 
+    phone, 
+    birthDay
+) => {
     try {
         await db.User.create({
             email: email,
             name: name,
             address: address,
             gender: gender,
-            password: password,
+            password: hashUserPassWord(password),
             groupId: groupId,
+            phone: phone,
+            birthDay: birthDay,
         })
     } catch (error) {
         console.log({ error });
-        throw error; // Re-throwing the error to handle it in the caller function if needed.
+        throw error;
     }
 
 }
@@ -34,7 +44,7 @@ const getListUser = async (email) => {
             });
         }
         const users = await db.User.findAll({
-            attributes: ['id', 'email', 'name', 'address', 'gender', 'groupId'],
+            attributes: ['id', 'email', 'name', 'address', 'gender', 'groupId', 'phone', 'birthDay', 'avatar'],
             include: {
                 model: db.Group,
                 attributes: ['name', 'description']
@@ -46,7 +56,7 @@ const getListUser = async (email) => {
         return users
     } catch (error) {
         console.log({ error });
-        throw error; // Re-throwing the error to handle it in the caller function if needed.
+        throw error;
     }
 }
 
@@ -59,7 +69,7 @@ const deleteUser = async (id) => {
         });
     } catch (error) {
         console.log({ error });
-        throw error; // Re-throwing the error to handle it in the caller function if needed.
+        throw error;
     }
 }
 
@@ -69,7 +79,7 @@ const getProfileUser = async (email) => {
             where: {
                 email: email,
             },
-            attributes: ['id', 'email', 'name', 'address', 'gender', 'groupId'],
+            attributes: ['id', 'email', 'name', 'address', 'gender', 'groupId', 'avatar'],
             include: {
                 model: db.Group,
                 attributes: ['name', 'description']
@@ -78,10 +88,24 @@ const getProfileUser = async (email) => {
         return user
     } catch (error) {
         console.log({ error });
-        throw error; // Re-throwing the error to handle it in the caller function if needed.
+        throw error;
     }
 }
 
+const updateAvatar = async (id, avatar) => {
+    try {
+        await db.User.update({
+            avatar,
+        }, {
+            where: {
+                id,
+            }
+        });
+    } catch (error) {
+        console.log({ error });
+        throw error;
+    }
+}
 
 
 const getUserById = async (id) => {
@@ -98,14 +122,16 @@ const getUserById = async (id) => {
     }
 }
 
-const updateUser = async (id, email, name, address, gender, groupId) => {
+const updateUser = async (id, email, name, address, gender, groupId, phone, birthDay) => {
     try {
         await db.User.update({
             email,
             name,
             groupId,
             address,
-            gender
+            gender,
+            phone,
+            birthDay,
         }, {
             where: {
                 id: id
@@ -113,7 +139,28 @@ const updateUser = async (id, email, name, address, gender, groupId) => {
         });
     } catch (error) {
         console.log({ error });
-        throw error; // Re-throwing the error to handle it in the caller function if needed.
+        throw error;
+    }
+}
+
+const updateProfile = async (id, email, name, address, gender, phone, birthDay, avatar) => {
+    try {
+        await db.User.update({
+            email,
+            name,
+            address,
+            gender,
+            phone,
+            birthDay,
+            avatar,
+        }, {
+            where: {
+                id: id
+            }
+        });
+    } catch (error) {
+        console.log({ error });
+        throw error;
     }
 }
 module.exports = {
@@ -123,4 +170,6 @@ module.exports = {
     updateUser,
     getUserById,
     getProfileUser,
+    updateAvatar,
+    updateProfile,
 }

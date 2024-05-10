@@ -4,7 +4,8 @@ import authController from '../controller/authController';
 import taskController from '../controller/taskController';
 import UserController from '../controller/userController'
 import {refreshToken} from '../controller/authController'
-import {authenticatedToken, verifyRefreshToken} from '../middleware/auth'
+import {authenticatedToken} from '../middleware/auth'
+
 const router = express.Router();
 const initWebRoutes = (app) => {
 
@@ -17,6 +18,7 @@ const initWebRoutes = (app) => {
     router.post('/recover-code', authController.VerifyAuthenticationOTP)
     router.post('/change-password-forgot', authController.handelUpdatePasswordForget)
     router.post('/change-password', authenticatedToken, authController.handelUpdatePassword)
+    
 
     router.post('/api/users', authenticatedToken, UserController.handelGetListUser)
     router.post('/api/delete-user/:id', authenticatedToken,UserController.handelDeleteUser)
@@ -24,6 +26,13 @@ const initWebRoutes = (app) => {
     router.get('/api/profile', authenticatedToken, UserController.handelGetProfileUser)
     router.post('/api/get-id-user/:id', authenticatedToken, UserController.handelGetByIdUser)
     router.put('/api/update-user', authenticatedToken, UserController.handelUpdateUser)
+    router.post('/api/upload-avatar', authenticatedToken, UserController.handleUploadAvatar)
+    router.post('/api/delete-avatar/:imgName', authenticatedToken, UserController.handelDeleteAvatar)
+    router.put('/api/update-profile', authenticatedToken, UserController.handelUpdateProfile)
+
+
+    
+
 
 
     router.post('/api/tasks', authenticatedToken, taskController.handelGetListTask)

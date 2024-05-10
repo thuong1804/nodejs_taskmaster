@@ -23,10 +23,6 @@ const login = async (email) => {
                 email: email,
             }
         })
-        // const passwordMatch = checkPassword(password, user.password);
-        // if (!passwordMatch) {
-        //     throw new Error("Incorrect password");
-        // }
         return user;
     } catch (error) {
         console.log({ error });

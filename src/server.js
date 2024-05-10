@@ -4,6 +4,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 var cors = require('cors')
 import cookieParser from 'cookie-parser';
+const path = require("path");
 
 require('dotenv').config();
 
@@ -42,6 +43,7 @@ app.use(cookieParser())
 //config body-parse
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+app.use(express.static(path.join(__dirname, "uploads")));
 //initWebRoutes
 initWebRoutes(app);
 

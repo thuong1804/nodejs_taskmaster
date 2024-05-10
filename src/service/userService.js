@@ -143,7 +143,17 @@ const updateUser = async (id, email, name, address, gender, groupId, phone, birt
     }
 }
 
-const updateProfile = async (id, email, name, address, gender, phone, birthDay, avatar) => {
+const updateProfile = async (
+    id, 
+    email, 
+    name, 
+    address, 
+    gender, 
+    phone, 
+    birthDay, 
+    avatar, 
+    groupId,
+) => {
     try {
         await db.User.update({
             email,
@@ -153,6 +163,7 @@ const updateProfile = async (id, email, name, address, gender, phone, birthDay, 
             phone,
             birthDay,
             avatar,
+            groupId,
         }, {
             where: {
                 id: id

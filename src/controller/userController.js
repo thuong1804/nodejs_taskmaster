@@ -165,9 +165,19 @@ const handelUpdateUser = async (req, res) => {
 }
 
 const handelUpdateProfile = async (req, res) => {
-    const { id, email, name, address, gender, phone, birthDay, avatar } = req.body
+    const { id, email, name, address, gender, phone, birthDay, avatar, groupId} = req.body
     try {
-        await userService.updateProfile(id, email, name, address, gender, phone, birthDay, avatar);
+        await userService.updateProfile(
+            id, 
+            email, 
+            name, 
+            address, 
+            gender, 
+            phone, 
+            birthDay, 
+            avatar, 
+            groupId
+        ) ;
         return res.status(200).json({
             status: "success",
             message: 'Update profile success',
@@ -179,6 +189,8 @@ const handelUpdateProfile = async (req, res) => {
                     gender,
                     phone,
                     birthDay,
+                    groupId,
+                    avatar,
                 }
             },
             result: true,

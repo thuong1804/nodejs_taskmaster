@@ -174,7 +174,7 @@ const handelUpdateProfile = async (req, res) => {
             address, 
             gender, 
             phone, 
-            birthDay, 
+            birthDay,
             avatar, 
             groupId
         ) ;
@@ -183,6 +183,7 @@ const handelUpdateProfile = async (req, res) => {
             message: 'Update profile success',
             data: {
                 content: {
+                    id,
                     email,
                     name,
                     address,

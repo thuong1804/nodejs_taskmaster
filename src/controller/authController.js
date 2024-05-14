@@ -4,7 +4,8 @@ import { verifyRefreshToken } from '../middleware/auth'
 import jwt from 'jsonwebtoken';
 import db from '../models/index'
 import { checkPassword } from '../utils';
-
+import notificationService from '../service/notificationService'
+import { typeValue } from '../constants';
 
 require('dotenv').config();
 
@@ -120,6 +121,7 @@ const handelUpdatePassword = async (req, res) => {
 
 const register = async (req, res) => {
     const { email, name, password, confirmPassword } = req.body
+    const type = typeValue.CREATE_USER
     const existingEmail = await db.User.findOne({
        where: {
         email: email
@@ -141,6 +143,7 @@ const register = async (req, res) => {
             })
         }
         const accountNew = await auth.register(email, name, password, confirmPassword)
+        await notificationService.creatNotification(type, accountNew.id)
         return res.status(200).json({
             status: 'Register new account success',
             data: accountNew,

@@ -46,10 +46,6 @@ const getListTask = async (userId, groupId, taskTitle, reporter) => {
             });
             return tasks
         }
-
-
-
-
     } catch (error) {
         console.log({ error });
         throw error;

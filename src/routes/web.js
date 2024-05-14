@@ -2,6 +2,7 @@ import express from "express";
 import homeController from '../controller/homeController'
 import authController from '../controller/authController';
 import taskController from '../controller/taskController';
+import notificationController from '../controller/notificationController';
 import UserController from '../controller/userController'
 import {refreshToken} from '../controller/authController'
 import {authenticatedToken} from '../middleware/auth'
@@ -31,10 +32,6 @@ const initWebRoutes = (app) => {
     router.put('/api/update-profile', authenticatedToken, UserController.handelUpdateProfile)
 
 
-    
-
-
-
     router.post('/api/tasks', authenticatedToken, taskController.handelGetListTask)
     router.post('/api/create-task', authenticatedToken, taskController.handelCreateTask)
     router.post('/api/delete-task', authenticatedToken, taskController.handelDeleteTask)
@@ -43,6 +40,8 @@ const initWebRoutes = (app) => {
     router.post('/api/search', authenticatedToken, taskController.handelSearchTask)
     router.post('/api/status', authenticatedToken, taskController.handelUpdateStatus)
 
+
+    router.post('/api/notifications', notificationController.getNotificationController)
 
 
 

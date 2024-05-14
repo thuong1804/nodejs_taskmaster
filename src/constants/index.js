@@ -1,0 +1,6 @@
+export const typeValue = {
+    LOGIN: 'LOGIN',
+    CREATE_TASK: 'CREATE_TASK',
+    CHANGE_PASSWORD: 'CHANGE_PASSWORD',
+    CREATE_USER: 'CREATE_USER',
+}

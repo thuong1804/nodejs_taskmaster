@@ -1,5 +1,8 @@
 import dayjs from 'dayjs'
 import taskService from '../service/taskService'
+import { typeValue } from '../constants'
+import userNotificationService from '../service/notificationService'
+
 
 const handelGetListTask = async (req, res) => {
     const id = req.body.userId
@@ -49,6 +52,7 @@ const handelGetListTask = async (req, res) => {
 }
 
 const handelCreateTask = async (req, res) => {
+    const type = typeValue.CREATE_TASK
     try {
         const {
             userId,
@@ -74,6 +78,7 @@ const handelCreateTask = async (req, res) => {
             owner,
             status,
         );
+        await userNotificationService.creatNotification(type, userId, reporter)
         return res.status(200).json({
             message: 'ok',
             result: true,

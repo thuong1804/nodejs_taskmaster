@@ -64,7 +64,7 @@ const handelCreateTask = async (req, res) => {
             owner,
             status,
         } = req.body
-    
+
         const scheduledDateParts = dayjs(scheduledDate)
         const completedDateParts = dayjs(completedDate)
 
@@ -78,7 +78,7 @@ const handelCreateTask = async (req, res) => {
             owner,
             status,
         );
-        await userNotificationService.creatNotification(type, userId, reporter)
+        await userNotificationService.creatNotification(type, userId, reporter, owner)
         return res.status(200).json({
             message: 'ok',
             result: true,
@@ -228,6 +228,38 @@ const handelUpdateStatus = async (req, res) => {
     }
 }
 
+const CheckDeadLineTaskController = async (req, res) => {
+    const {id ,userId,} = req.body
+    const type = typeValue.DEAD_LINE;
+    try {
+        const nearDeadlineTasks = await taskService.checkDeadLineTask(id)
+        nearDeadlineTasks.forEach(element => {
+            userNotificationService.creatNotification(
+                type, 
+                userId, 
+                undefined, 
+                undefined, 
+                element.taskTitle 
+            )
+        });
+      
+        return res.status(200).json({
+            status: "success",
+            message: 'List tak deadline',
+            data: nearDeadlineTasks,
+            result: true,
+        })
+    } catch (error) {
+        console.log({error})
+        res.status(500).json({
+            status: "error",
+            code: 500,
+            data: [],
+            message: "Internal Server Error",
+        });
+    }
+}
+
 module.exports = {
     handelGetListTask,
     handelCreateTask,
@@ -235,5 +267,6 @@ module.exports = {
     handelUpdateTask,
     handelGetTaskById,
     handelSearchTask,
-    handelUpdateStatus
+    handelUpdateStatus,
+    CheckDeadLineTaskController,
 }

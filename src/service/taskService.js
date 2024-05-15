@@ -174,7 +174,6 @@ const searchTask = async (query) => {
     try {
         const tasks = await db.Task.findAll({
             where: {
-
                 [Op.or]: [
                     {
                         taskTitle: {
@@ -214,6 +213,23 @@ const updateStatus = async (id, status) => {
     }
 }
 
+const checkDeadLineTask = async(ids) => {
+    try {
+        const tasks = await db.Task.findAll({
+            where: {
+                id: {
+                    [Op.in]: ids
+                }
+            },
+          });
+          console.log({tasks})
+        return tasks
+    } catch (error) {
+        console.log({ error })
+        throw error;
+    }
+}
+
 module.exports = {
     getListTask,
     createTask,
@@ -223,4 +239,5 @@ module.exports = {
     getTaskById,
     searchTask,
     updateStatus,
+    checkDeadLineTask,
 }

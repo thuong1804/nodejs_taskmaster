@@ -39,11 +39,10 @@ const initWebRoutes = (app) => {
     router.post('/api/get-id-task/:id', authenticatedToken, taskController.handelGetTaskById)
     router.post('/api/search', authenticatedToken, taskController.handelSearchTask)
     router.post('/api/status', authenticatedToken, taskController.handelUpdateStatus)
+    router.post('/api/deadline', taskController.CheckDeadLineTaskController)
 
 
-    router.post('/api/notifications', notificationController.getNotificationController)
-
-
+    router.post('/api/notifications', authenticatedToken, notificationController.getNotificationController)
 
     return app.use('/', router)
 }

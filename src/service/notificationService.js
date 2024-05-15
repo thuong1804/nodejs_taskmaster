@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import db from '../models/index'
-import { typeValue } from '../constants';
+import { DATETIME_FORMAT_DISPLAY, typeValue } from '../constants';
+import { where } from 'sequelize';
 
 const getNotification = async (userId) => {
     try {
@@ -26,30 +27,51 @@ const getNotification = async (userId) => {
     }
 }
 
-const creatNotification = async (type, userId, reporter) => {
+const creatNotification = async (type, userId, reporter, owner, taskTitle) => {
     const currentDay = dayjs(new Date())
+    
     try {
         switch (type) {
             case typeValue.CREATE_TASK: {
+                const userReporter = await db.User.findOne({
+                    where: {
+                        id: reporter,
+                    }
+                })
                 const notification = await db.Notification.create({
-                    userId: userId,
-                    name: 'You have been assigned a new task from',
+                    userId: owner,
+                    name: `You have been assigned a new task from ${userReporter.name}`,
                     date: currentDay,
                     createBy: reporter,
+                    link: 'tasks'
                 });
                 return notification;
             }
             case typeValue.CHANGE_PASSWORD: {
                 const notification = await db.Notification.create({
                     userId: userId,
-                    notificationId: 2,
+                    name: 'You have changed your new password',
+                    description: `You have changed your new password at ${dayjs(currentDay).format(DATETIME_FORMAT_DISPLAY)}`,
+                    date: currentDay,
                 });
                 return notification;
             }
             case typeValue.CREATE_USER: {
                 const notification = await db.Notification.create({
+                    name: `Welcome to task master`,
+                    description: `You created your account at ${dayjs(currentDay).format(DATETIME_FORMAT_DISPLAY)}`,
                     userId: userId,
                     date: currentDay,
+                });
+                return notification;
+            }
+            case typeValue.DEAD_LINE: {
+                const notification = await db.Notification.create({
+                    name: `Task is due soon`,
+                    description: `Task ${taskTitle} is about to expire`,
+                    userId: userId,
+                    date: currentDay,
+                    link: 'task'
                 });
                 return notification;
             }

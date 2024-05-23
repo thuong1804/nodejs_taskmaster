@@ -1,58 +1,86 @@
 import db from '../models/index'
 const { Op, where } = require("sequelize");
 
-const getListTask = async (userId, groupId, taskTitle, reporter) => {
+const getListTask = async (
+    userId,
+    taskTitle,
+    reporter,
+    owner,
+    status,
+    groupId
+) => {
     try {
-        if (taskTitle || reporter) {
-            let whereCondition = {};
-            whereCondition = {
-                [Op.or]: []
-            };
-            if (taskTitle) {
-                whereCondition[Op.or].push({
-                    taskTitle: {
-                        [Op.like]: `%${taskTitle}%`
-                    }
-                });
+        let whereCondition = groupId !== 1 ? {
+            owner: {
+                [Op.eq]: parseInt(userId) || null
             }
-            if (reporter) {
-                whereCondition[Op.or].push({
-                    reporter: {
-                        [Op.eq]: parseInt(reporter) || null
-                    }
-                });
-            }
-            const tasks = await db.Task.findAll({
-                raw: true,
-                nest: true,
-                include: {
-                    model: db.User,
-                    attributes: ['id', 'email', 'name']
-                },
-                where: whereCondition
+        } : {};
+        
+        const additionalConditions = [];
+        
+        if (taskTitle) {
+            additionalConditions.push({
+                taskTitle: {
+                    [Op.like]: `%${taskTitle}%`
+                }
             });
-            return tasks
-        } else {
-            const tasks = await db.Task.findAll({
-                where: {
-                    userId: userId
-                },
-                raw: true,
-                nest: true,
-                include: {
-                    model: db.User,
-                    attributes: ['id', 'email', 'name']
-                },
-            });
-            return tasks
         }
+        if (reporter) {
+            additionalConditions.push({
+                reporter: {
+                    [Op.eq]: parseInt(reporter)
+                }
+            });
+        }
+        if (owner) {
+            additionalConditions.push({
+                owner: {
+                    [Op.eq]: parseInt(owner) || null
+                }
+            });
+        }
+        if (status) {
+            additionalConditions.push({
+                status: {
+                    [Op.eq]: status
+                }
+            });
+        }
+        
+        if (additionalConditions.length > 0) {
+            whereCondition = {
+                [Op.and]: [
+                    whereCondition,
+                    ...additionalConditions
+                ]
+            };
+        }
+        
+        const tasks = await db.Task.findAll({
+            raw: true,
+            nest: true,
+            include: {
+                model: db.User,
+                attributes: ['id', 'email', 'name']
+            },
+            where: whereCondition
+        });
+        
+        return tasks;
+            
+        
     } catch (error) {
-        console.log({ error });
+        console.error(error);
         throw error;
     }
 }
 
-const getListTaskWithPagination = async (userId, groupId, page, size) => {
+const getListTaskWithPagination = async (
+    userId,
+    groupId,
+    page,
+    size
+) => {
     try {
         let whereCondition = {};
 
@@ -213,7 +241,7 @@ const updateStatus = async (id, status) => {
     }
 }
 
-const checkDeadLineTask = async(ids) => {
+const checkDeadLineTask = async (ids) => {
     try {
         const tasks = await db.Task.findAll({
             where: {
@@ -221,8 +249,8 @@ const checkDeadLineTask = async(ids) => {
                     [Op.in]: ids
                 }
             },
-          });
-          console.log({tasks})
+        });
+        console.log({ tasks })
         return tasks
     } catch (error) {
         console.log({ error })

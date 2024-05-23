@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import db from '../models/index'
 import { DATETIME_FORMAT_DISPLAY, typeValue } from '../constants';
-import { where } from 'sequelize';
+import { Op, where } from 'sequelize';
 
 const getNotification = async (userId) => {
     try {
@@ -11,7 +11,7 @@ const getNotification = async (userId) => {
                     model: db.User,
                     attributes: ['id', 'email', 'name',]
                 },
-             
+
             ],
             raw: true,
             nest: true,
@@ -29,7 +29,6 @@ const getNotification = async (userId) => {
 
 const creatNotification = async (type, userId, reporter, owner, taskTitle) => {
     const currentDay = dayjs(new Date())
-    
     try {
         switch (type) {
             case typeValue.CREATE_TASK: {
@@ -40,7 +39,8 @@ const creatNotification = async (type, userId, reporter, owner, taskTitle) => {
                 })
                 const notification = await db.Notification.create({
                     userId: owner,
-                    name: `You have been assigned a new task from ${userReporter.name}`,
+                    name: `You have been assigned a new task`,
+                    description: `You have been assigned a new task from ${userReporter.name}`,
                     date: currentDay,
                     createBy: reporter,
                     link: 'tasks'
@@ -71,7 +71,7 @@ const creatNotification = async (type, userId, reporter, owner, taskTitle) => {
                     description: `Task ${taskTitle} is about to expire`,
                     userId: userId,
                     date: currentDay,
-                    link: 'task'
+                    link: 'tasks'
                 });
                 return notification;
             }
@@ -84,7 +84,42 @@ const creatNotification = async (type, userId, reporter, owner, taskTitle) => {
     }
 }
 
+const readOne = async (id) => {
+    try {
+        await db.Notification.update({
+            seen: true,
+        }, {
+            where: {
+                id,
+            }
+        });
+    } catch (error) {
+        console.log({ error });
+        throw error;
+    }
+}
+
+
+const readAll = async (userId) => {
+    try {
+        await db.Notification.update({
+            seen: true,
+        }, {
+            where: {
+                userId: {
+                    [Op.in]: userId
+                }
+            }
+        });
+    } catch (error) {
+        console.log({ error });
+        throw error;
+    }
+}
+
 module.exports = {
     getNotification,
     creatNotification,
+    readOne,
+    readAll,
 }

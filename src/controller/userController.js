@@ -236,6 +236,8 @@ const handelGetProfileUser = async (req, res) => {
                                     groupId: user.groupId,
                                     Group: user.Group,
                                     avatar: user.avatar,
+                                    phone: user.phone,
+                                    birthDay: user.birthDay,
                                 },
                             },
                             result: true

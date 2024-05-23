@@ -79,7 +79,7 @@ const getProfileUser = async (email) => {
             where: {
                 email: email,
             },
-            attributes: ['id', 'email', 'name', 'address', 'gender', 'groupId', 'avatar'],
+            attributes: ['id', 'email', 'name', 'address', 'gender', 'groupId', 'avatar', 'phone', 'birthDay'],
             include: {
                 model: db.Group,
                 attributes: ['name', 'description']

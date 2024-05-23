@@ -10,7 +10,8 @@ const handelGetListTask = async (req, res) => {
     const cookie = req.cookies
     const page = req.query.page;
     const size = req.query.size;
-    const { taskTitle, reporter } = req.body
+    const { taskTitle, reporter, owner, status} = req.body
+
     if (cookie && cookie.login) {
         try {
             if (page && size) {
@@ -25,9 +26,9 @@ const handelGetListTask = async (req, res) => {
                 })
 
             } else {
-                const taskList = await taskService.getListTask(id, groupId, taskTitle, reporter);
+                const taskList = await taskService.getListTask(id, taskTitle, reporter, owner, status, groupId);
                 if (!taskList) {
-                    return res.status(402).json({
+                    return res.status(400).json({
                         status: 'Get list task failed',
                         result: false,
                     })

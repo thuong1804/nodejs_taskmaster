@@ -30,6 +30,48 @@ const getNotificationController = async(req, res) => {
     }
 }
 
+const readOneController = async(req, res) => {
+    const {id} = req.body
+    try {
+        await notificationService.readOne(id)
+        return res.status(200).json({
+            status: "success",
+            message: 'Seen notification',
+            result: true,
+        })
+    } catch (error) {
+        console.log({ error })
+        res.status(500).json({
+            status: "error",
+            code: 500,
+            data: [],
+            message: "Internal Server Error",
+        });
+    }
+}
+
+const readAllController = async(req, res) => {
+    const {userId} = req.body
+    try {
+        await notificationService.readAll(userId)
+        return res.status(200).json({
+            status: "success",
+            message: 'Seen notification',
+            result: true,
+        })
+    } catch (error) {
+        console.log({ error })
+        res.status(500).json({
+            status: "error",
+            code: 500,
+            data: [],
+            message: "Internal Server Error",
+        });
+    }
+}
+
 module.exports = {
     getNotificationController,
+    readOneController,
+    readAllController,
 }

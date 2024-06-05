@@ -3,13 +3,13 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    queryInterface.addColumn(
-      'Users',
-      'avatar',
+    await queryInterface.addColumn(
+      'Notifications',
+      'seen',
       {
-        type: Sequelize.DataTypes.STRING,
+        type: Sequelize.DataTypes.BOOLEAN,
       },
-    )
+    );
     /**
      * Add altering commands here.
      *

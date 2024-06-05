@@ -75,6 +75,7 @@ const register = async (email, name, password) => {
             email,
             name,
             password: hashUserPassWord(password),
+            groupId: 2,
         },
     )
         return user;

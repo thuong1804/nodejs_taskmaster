@@ -10,14 +10,6 @@ const generateToken = async (payload) => {
         const refreshToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET_REFRESH, {
             expiresIn: '3d'
         })
-        const existingUserToken = await db.UserToken.findOne(
-            {
-                where: { userId: payload.userId }
-            });
-        if (existingUserToken) {
-            await existingUserToken.destroy();
-        }
-        await db.UserToken.create({ userId: payload.userId, token: refreshToken });
         return Promise.resolve({ accessToken, refreshToken });
     } catch (error) {
         console.error('Error:', error);

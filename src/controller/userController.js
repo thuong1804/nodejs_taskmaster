@@ -6,9 +6,9 @@ const path = require('path');
 const fs = require('fs')
 
 const handelGetListUser = async (req, res) => {
-    const {email} = req.body
+    const {email, gender, groupId} = req.body
     try {
-        const userList = await userService.getListUser(email);
+        const userList = await userService.getListUser(email, gender, groupId);
         if (!userList) {
             return res.status(400).json({
                 status: "failed",
@@ -210,11 +210,13 @@ const handelUpdateProfile = async (req, res) => {
 
 const handelGetProfileUser = async (req, res) => {
     const cookie = req.cookies
+
     if (cookie && cookie.login) {
         let loginToken = cookie.login;
         try {
             jwt.verify(loginToken, process.env.ACCESS_TOKEN_SECRET, async (error, decode) => {
                 const emailUser = decode?.email
+
                 if (!error && emailUser) {
                     try {
                         const user = await userService.getProfileUser(emailUser);
@@ -264,11 +266,11 @@ const handelGetProfileUser = async (req, res) => {
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, 'src/uploads'); // Thư mục lưu trữ file
+      cb(null, 'src/uploads');
     },
     filename: function (req, file, cb) {
       const ext = path.extname(file.originalname);
-      cb(null, Date.now() + ext); // Tạo tên file mới để tránh trùng lặp
+      cb(null, Date.now() + ext);
     },
   });
   
@@ -277,12 +279,14 @@ const upload = multer({ storage: storage });
 const handleUploadAvatar = async (req, res) => {
     try {
       upload.single('avatar')(req, res, async (err) => {
+
         if (err) {
           return res.status(400).json({ message: 'Upload avatar failed' });
         }
+
         const { filename, path } = req.file;
-        console.log({path})
         const {id} = req.body
+
         await userService.updateAvatar(id, filename)
         return res.status(200).json({
             status: 'Upload success',
@@ -302,7 +306,8 @@ const handleUploadAvatar = async (req, res) => {
   const handelDeleteAvatar = (req, res) => {
     const imageName = req.params.imgName;
     const id = req.body.id;
-    const imagePath = path.join(__dirname, '..', 'uploads', imageName); // Construct the full path to the image
+    const imagePath = path.join(__dirname, '..', 'uploads', imageName);
+
     if (fs.existsSync(imagePath)) {
         fs.unlink(imagePath, (err) => {
             if (err) {

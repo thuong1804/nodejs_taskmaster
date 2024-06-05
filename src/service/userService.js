@@ -30,19 +30,43 @@ const createNewUser = async (
 
 }
 
-const getListUser = async (email) => {
+const getListUser = async (email, gender, groupId) => {
     try {
         let whereCondition = {};
+        const additionalConditions = [];
+
         if (email) {
-            whereCondition = {
-                [Op.or]: []
-            };
-            whereCondition[Op.or].push({
+            additionalConditions.push({
                 email: {
                     [Op.like]: `%${email}%`
                 }
             });
         }
+        if (gender) {
+            additionalConditions.push({
+                gender: {
+                    [Op.eq]: parseInt(gender)
+                }
+            });
+        }
+
+        if (groupId) {
+            additionalConditions.push({
+                groupId: {
+                    [Op.eq]: parseInt(groupId)
+                }
+            });
+        }
+
+        if (additionalConditions.length > 0) {
+            whereCondition = {
+                [Op.and]: [
+                    whereCondition,
+                    ...additionalConditions
+                ]
+            };
+        }
+        
         const users = await db.User.findAll({
             attributes: ['id', 'email', 'name', 'address', 'gender', 'groupId', 'phone', 'birthDay', 'avatar'],
             include: {

@@ -25,6 +25,7 @@ const getListTask = async (
                 }
             });
         }
+
         if (reporter) {
             additionalConditions.push({
                 reporter: {
@@ -32,6 +33,7 @@ const getListTask = async (
                 }
             });
         }
+
         if (owner) {
             additionalConditions.push({
                 owner: {
@@ -39,6 +41,7 @@ const getListTask = async (
                 }
             });
         }
+
         if (status) {
             additionalConditions.push({
                 status: {
@@ -67,8 +70,6 @@ const getListTask = async (
         });
         
         return tasks;
-            
-        
     } catch (error) {
         console.error(error);
         throw error;

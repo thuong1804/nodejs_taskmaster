@@ -6,8 +6,6 @@ const nodemailer = require('nodemailer');
 const otpGenerator = require('otp-generator')
 const expiresIn = '1m';
 
-
-
 const OTP = otpGenerator.generate(6, {
     expiresIn,
     digits: true,
@@ -37,10 +35,13 @@ const updatePassword = async (email, password, newPassword) => {
                 email: email,
             }
         })
+        
         const passwordMatch = checkPassword(password, user.password);
+
         if (!passwordMatch) {
             throw new Error("Incorrect password");
         }
+
         await db.User.update({
             password: hashUserPassWord(newPassword),
         }, {
@@ -48,6 +49,7 @@ const updatePassword = async (email, password, newPassword) => {
                 email: email,
             }
         })
+
     } catch (error) {
         console.log({ error });
         throw error;
@@ -151,7 +153,6 @@ const authenticationOTP = async(code, emailUSer) => {
         throw error;
     }
 }
-
 
 module.exports = {
     login,

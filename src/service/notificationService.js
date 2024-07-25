@@ -37,6 +37,7 @@ const creatNotification = async (type, userId, reporter, owner, taskTitle) => {
                         id: reporter,
                     }
                 })
+
                 const notification = await db.Notification.create({
                     userId: owner,
                     name: `You have been assigned a new task`,
@@ -98,7 +99,6 @@ const readOne = async (id) => {
         throw error;
     }
 }
-
 
 const readAll = async (userId) => {
     try {

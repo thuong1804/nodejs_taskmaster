@@ -27,7 +27,6 @@ const createNewUser = async (
         console.log({ error });
         throw error;
     }
-
 }
 
 const getListUser = async (email, gender, groupId) => {
@@ -42,6 +41,7 @@ const getListUser = async (email, gender, groupId) => {
                 }
             });
         }
+
         if (gender) {
             additionalConditions.push({
                 gender: {
@@ -77,6 +77,7 @@ const getListUser = async (email, gender, groupId) => {
             nest: true,
             where: whereCondition
         });
+        
         return users
     } catch (error) {
         console.log({ error });
@@ -130,7 +131,6 @@ const updateAvatar = async (id, avatar) => {
         throw error;
     }
 }
-
 
 const getUserById = async (id) => {
     try {

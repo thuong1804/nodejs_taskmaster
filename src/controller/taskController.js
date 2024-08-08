@@ -212,6 +212,14 @@ const handelSearchTask = async (req, res) => {
 const handelUpdateStatus = async (req, res) => {
     const { id, status } = req.body;
     try {
+        if(id.length < 1) {
+            return res.status(500).json({
+                status: "error",
+                code: 500,
+                message: 'Internal Server Error',
+                result: false,
+            })
+        }
         await taskService.updateStatus(id, status);
         return res.status(200).json({
             status: "success",
